@@ -405,10 +405,6 @@ class FoodSearchProblem:
         self._expanded = 0 # DO NOT CHANGE
         self.heuristicInfo = {} # A dictionary for the heuristic to store information
 
-        #Added
-        top, right = self.walls.height-2, self.walls.width-2
-        self.corners = ((1,1), (1,top), (right, top), (right, 1))
-
     def getStartState(self):
         return self.start
 
@@ -478,18 +474,30 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
 
+    #Box walls xy coordinates (top, bottom, right, left)
+    box_walls = (problem.walls.height-2, 1, problem.walls.width-2, 1)
+    xy_index = (1,1,0,0)
     position, foodGrid = state
     foodGrid = foodGrid.asList()
+ 
+    if len(foodGrid): 
+        index = ([None,None],[None,None],[None,None],[None,None])  # ([index, distance],[index, distance], ...)
+        for i, food in enumerate(foodGrid):
+            for j, wall in enumerate(box_walls):
+                distance = abs(food[xy_index[j]] - wall)
+                if distance < index[j][1] or index[j][0] == None or index[j][1] == None:
+                    index[j][1] = distance
+                    index[j][0] = i
 
-    #Largest distance between food points
-    if len(foodGrid) == 1: return util.manhattanDistance(position,foodGrid[0]) 
-    
-    max_distance = 0
-    for food1 in foodGrid:
-        for food2 in foodGrid:
-            distance = util.manhattanDistance(food1,food2)    
-            if distance > max_distance: max_distance = distance
-    return max_distance
+        heuristic = 0
+        for j, wall in enumerate(box_walls):
+            distance = abs(position[xy_index[j]] - wall)
+            if distance > index[j][1]:
+                heuristic += distance - index[j][1]        
+     
+        return heuristic
+
+    return 0
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -518,8 +526,52 @@ class ClosestDotSearchAgent(SearchAgent):
         food = gameState.getFood()
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
+       
+        class node_class:
 
-        "*** YOUR CODE HERE ***"
+            def __init__(self):
+                self.state = ()
+                self.path = []
+                self.cost = 0
+
+        #Initialise Fringe and Closed_list
+        fringe = util.Queue()   
+        closed_list = [] 
+
+        #Initialise start node and push onto the fringe
+        node = node_class()
+        node.state = startPosition
+        fringe.push(node)
+
+        while True:
+
+            #Check if fringe is empty and pop new node
+            if fringe.isEmpty(): 
+                print "Fringe Empty: No Solution!"
+                return None
+            node = fringe.pop()
+
+            #Check if state has already been expanded
+            if not node.state in closed_list:
+
+                #Check if node is Goal State
+                if problem.isGoalState(node.state): 
+                    return node.path
+                
+                #Create successors and add to fringe
+                for x in problem.getSuccessors(node.state):
+                    
+                    #Create new node and add to fringe
+                    new_node = node_class()
+                    new_node.state = x[0]
+
+                    new_node.path = node.path + [x[1]]
+                    new_node.cost = node.cost + x[2]
+                    fringe.push(new_node)
+                    
+                #Add node to closed list
+                closed_list.append(node.state)
+
         util.raiseNotDefined()
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -553,7 +605,11 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         The state is Pacman's position. Fill this in with a goal test that will
         complete the problem definition.
         """
-        x,y = state
+        foods = self.food.asList()
+        for food in foods:
+            if food == state: return True
+
+        return False
 
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()

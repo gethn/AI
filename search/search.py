@@ -90,11 +90,11 @@ def depthFirstSearch(problem):
             self.path = []
             self.cost = 0
     
-    ##Initialise Fringe and Closed_list
+    #Initialise Fringe and Closed_list
     fringe = util.Stack()   
     closed_list = [] 
 
-    ##Initialise start node and push onto the fringe
+    #Initialise start node and push onto the fringe
     node = node_class()
     node.state = problem.getStartState()
     fringe.push(node)

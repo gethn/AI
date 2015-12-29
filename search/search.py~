@@ -140,14 +140,11 @@ def breadthFirstSearch(problem):
             self.path = []
             self.cost = 0
     
-    ##Initialise Fringe and Closed_list
+    #Initialise Fringe and Closed_list
     fringe = util.Queue()   
     closed_list = [] 
 
-    #testing
-    print problem.getSuccessors((1,2,[False,False,False,False]))
-
-    ##Initialise start node and push onto the fringe
+    #Initialise start node and push onto the fringe
     node = node_class()
     node.state = problem.getStartState()
     fringe.push(node)
