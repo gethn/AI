@@ -478,66 +478,10 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
 
-    #Three sided perimeter
     position, foodGrid = state
     foodGrid = foodGrid.asList()
     
-    if len(foodGrid) >= 4: 
-        index = ([None,0],[None,0],[None,0],[None,0])    
-        for i, food in enumerate(foodGrid):
-            for j, corner in enumerate(problem.corners):
-                distance = util.manhattanDistance(food, corner)
-                if distance < index[j][1] or index[j][0] == None:
-                    index[j][1] = distance
-                    index[j][0] = i
-       
-        distance = [0,0,0,0]
-        for i in range(4):
-            distance[i] = util.manhattanDistance(foodGrid[index[i-1][0]],foodGrid[index[i][0]])
-        del distance[distance.index(max(distance))]
-        return sum(distance)
-    
-    
-    max_distance = 0
-    for food in foodGrid:
-        distance = util.manhattanDistance(position, food)     
-        if distance > max_distance: max_distance = distance                                                                                
-    return max_distance
-            
-        
-    
-    #Distance to furthest food or distance between two food, whichever is bigger
-    """
-    food_positions = foodGrid.asList()
-    closest_food, furthest_food = 10000, 0
-    for i, food in enumerate(food_positions):
-        distance = util.manhattanDistance(position, food)
-        if distance >= furthest_food: 
-            furthest_food = distance
-            furthest_pos = i
-        if distance <= closest_food:
-            closest_food = distance
-            closest_pos = i
-
-    if len(food_positions):
-        food_diff = util.manhattanDistance(food_positions[furthest_pos],food_positions[closest_pos])
-        if food_diff > furthest_food:
-            return food_diff
-        else:
-            return furthest_food
-    else:
-        return furthest_food
-    """
-
-    #Distance to furthest food 
-    """
-    max_distance = 1000
-    for food in foodGrid.asList():
-        distance = util.manhattanDistance(position, food)     
-        if distance < max_distance: max_distance = distance                                                                                
-    return max_distance + len(foodGrid.asList()) - 1
-    """
-
+  
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
     def registerInitialState(self, state):
