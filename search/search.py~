@@ -82,17 +82,22 @@ def depthFirstSearch(problem):
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
     """
-
-	#Initialise the fringe by expanding Start State
-    fringe = util.Stack()
-    for newnode in problem.getSuccessors(problem.getStartState()):
-        
-        #Add total cost to end of successors and add to fringe
-        newnode += (newnode[-1],)
-        fringe.push(newnode)
     
-    #Initialise closed list
-    closed = []
+    class node_class:
+
+        def __init__(self):
+            self.state = ()
+            self.path = []
+            self.cost = 0
+    
+    ##Initialise Fringe and Closed_list
+    fringe = util.Stack()   
+    closed_list = [] 
+
+    ##Initialise start node and push onto the fringe
+    node = node_class()
+    node.state = problem.getStartState()
+    fringe.push(node)
 
     while True:
 
@@ -102,39 +107,50 @@ def depthFirstSearch(problem):
             return None
         node = fringe.pop()
 
-        #Check if node has already been expanded
-        if not node[0] in closed:
+        #Check if state has already been expanded
+        if not node.state in closed_list:
 
             #Check if node is Goal State
-            if problem.isGoalState(node[0]): 
-                return list(node[1:-2])
+            if problem.isGoalState(node.state):
+                return node.path
             
             #Create successors and add to fringe
-            for newnode in problem.getSuccessors(node[0]):
+            for x in problem.getSuccessors(node.state):
                 
-                #Add path into successors and total cost onto end of successors
-                newnode += (node[-1] + newnode[-1],)
-                newnode = newnode[0:1] + node[1:-2] + newnode[1:]
-                fringe.push(newnode)
+                #Create new node and add to fringe
+                new_node = node_class()
+                new_node.state = x[0]
 
+                new_node.path = node.path + [x[1]]
+                new_node.cost = node.cost + x[2]
+                fringe.push(new_node)
+                
             #Add node to closed list
-            closed.append(node[0])
+            closed_list.append(node.state)
 
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
 
-	#Initialise the fringe by expanding Start State
-    fringe = util.Queue()
-    for newnode in problem.getSuccessors(problem.getStartState()):
-        
-        #Add total cost to end of successors and add to fringe
-        newnode += (newnode[-1],)
-        fringe.push(newnode)
+    class node_class:
+
+        def __init__(self):
+            self.state = ()
+            self.path = []
+            self.cost = 0
     
-    #Initialise closed list
-    closed = []
+    ##Initialise Fringe and Closed_list
+    fringe = util.Queue()   
+    closed_list = [] 
+
+    #testing
+    print problem.getSuccessors((1,2,[False,False,False,False]))
+
+    ##Initialise start node and push onto the fringe
+    node = node_class()
+    node.state = problem.getStartState()
+    fringe.push(node)
 
     while True:
 
@@ -144,39 +160,47 @@ def breadthFirstSearch(problem):
             return None
         node = fringe.pop()
 
-        #Check if node has already been expanded
-        if not node[0] in closed:
+        #Check if state has already been expanded
+        if not node.state in closed_list:
 
             #Check if node is Goal State
-            if problem.isGoalState(node[0]): 
-                return list(node[1:-2])
+            if problem.isGoalState(node.state): 
+                return node.path
             
             #Create successors and add to fringe
-            for newnode in problem.getSuccessors(node[0]):
+            for x in problem.getSuccessors(node.state):
                 
-                #Add path into successors and total cost onto end of successors
-                newnode += (node[-1] + newnode[-1],)
-                newnode = newnode[0:1] + node[1:-2] + newnode[1:]
-                fringe.push(newnode)
+                #Create new node and add to fringe
+                new_node = node_class()
+                new_node.state = x[0]
 
+                new_node.path = node.path + [x[1]]
+                new_node.cost = node.cost + x[2]
+                fringe.push(new_node)
+                
             #Add node to closed list
-            closed.append(node[0])
+            closed_list.append(node.state)
 
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
 
-	#Initialise the fringe by expanding Start State
-    fringe = util.PriorityQueue()
-    for newnode in problem.getSuccessors(problem.getStartState()):
-        
-        #Add total cost to end of successors and add to fringe
-        newnode += (newnode[-1],)
-        fringe.push(newnode, newnode[-1])
+    class node_class:
+
+        def __init__(self):
+            self.state = ()
+            self.path = []
+            self.cost = 0
     
-    #Initialise closed list
-    closed = []
+    ##Initialise Fringe and Closed_list
+    fringe = util.PriorityQueue()   
+    closed_list = [] 
+
+    ##Initialise start node and push onto the fringe
+    node = node_class()
+    node.state = problem.getStartState()
+    fringe.push(node, node.cost)
 
     while True:
 
@@ -186,23 +210,25 @@ def uniformCostSearch(problem):
             return None
         node = fringe.pop()
 
-        #Check if node has already been expanded
-        if not node[0] in closed:
+        #Check if state has already been expanded
+        if not node.state in closed_list:
 
             #Check if node is Goal State
-            if problem.isGoalState(node[0]): 
-                return list(node[1:-2])
+            if problem.isGoalState(node.state): 
+                return node.path
             
             #Create successors and add to fringe
-            for newnode in problem.getSuccessors(node[0]):
+            for x in problem.getSuccessors(node.state):
                 
-                #Add path into successors and total cost onto end of successors
-                newnode += (node[-1] + newnode[-1],)
-                newnode = newnode[0:1] + node[1:-2] + newnode[1:]
-                fringe.push(newnode, newnode[-1])
-
+                #Create new node and add to fringe
+                new_node = node_class()
+                new_node.state = x[0]
+                new_node.path = node.path + [x[1]]
+                new_node.cost = node.cost + x[2]
+                fringe.push(new_node, new_node.cost)
+                
             #Add node to closed list
-            closed.append(node[0])
+            closed_list.append(node.state)
 
     util.raiseNotDefined()
 
@@ -216,16 +242,24 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
 
-	#Initialise the fringe by expanding Start State
-    fringe = util.PriorityQueue()
-    for newnode in problem.getSuccessors(problem.getStartState()):
-        
-        #Add total cost to end of successors and add to fringe
-        newnode += (newnode[-1],)
-        fringe.push(newnode, newnode[-1] + heuristic(newnode[0], problem))
-        
-    #Initialise closed list
-    closed = []
+    class node_class:
+
+        def __init__(self):
+            self.state = ()
+            self.path = []
+            self.cost = 0
+    
+        def heuristic(self):
+            return heuristic(self.state, problem)        
+
+    ##Initialise Fringe and Closed_list
+    fringe = util.PriorityQueue()   
+    closed_list = [] 
+
+    ##Initialise start node and push onto the fringe
+    node = node_class()
+    node.state = problem.getStartState()
+    fringe.push(node, node.cost + node.heuristic())
 
     while True:
 
@@ -235,23 +269,25 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             return None
         node = fringe.pop()
 
-        #Check if node has already been expanded
-        if not node[0] in closed:
+        #Check if state has already been expanded
+        if not node.state in closed_list:
 
             #Check if node is Goal State
-            if problem.isGoalState(node[0]): 
-                return list(node[1:-2])
+            if problem.isGoalState(node.state): 
+                return node.path
             
             #Create successors and add to fringe
-            for newnode in problem.getSuccessors(node[0]):
+            for x in problem.getSuccessors(node.state):
                 
-                #Add path into successors and total cost onto end of successors
-                newnode += (node[-1] + newnode[-1],)
-                newnode = newnode[0:1] + node[1:-2] + newnode[1:]
-                fringe.push(newnode, newnode[-1] + heuristic(newnode[0], problem))
-
+                #Create new node and add to fringe
+                new_node = node_class()
+                new_node.state = x[0]
+                new_node.path = node.path + [x[1]]
+                new_node.cost = node.cost + x[2]
+                fringe.push(new_node, new_node.cost + new_node.heuristic())
+                
             #Add node to closed list
-            closed.append(node[0])
+            closed_list.append(node.state)
 
     util.raiseNotDefined()
 
